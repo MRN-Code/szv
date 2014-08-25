@@ -81,13 +81,13 @@
             }
         }
 
+        initPaint();
+        initGUI();
         Promise.all(loadedPs)
             .then(execJSONhandlers)
             .then(function userCallback() {
                 if (cb) cb();
             });
-        initPaint();
-        initGUI();
     }
 
     /**
@@ -141,10 +141,22 @@
 
 
     /**
+     * Returns the DOM object of the target
+     * @return {Object} DOM node
+     */
+    function getTargetNode () {
+        if (domTarget === 'body') return window.document.body;
+        return window.document.getElementById(domTarget.substring(1));
+    }
+
+
+
+    /**
      * Paints the initial svg
      */
     function initPaint() {
-        paths = window.document.getElementsByTagName("path");
+        svg = d3.select(domTarget).append("svg");
+        paths = svg[0][0].getElementsByTagName("path");
         line = d3.svg.line()
             .x(function(d) {
                 return d[0];
@@ -154,8 +166,7 @@
             })
             .interpolate("linear");
 
-        svg = d3.select(domTarget).append("svg")
-            .attr("width", width)
+        svg.attr("width", width)
             .attr("height", height)
             .style("position", "relative");
 
@@ -201,6 +212,7 @@
                     });
             }
         });
+        getTargetNode().appendChild(gui.domElement);
     }
 
 
