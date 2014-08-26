@@ -1,5 +1,5 @@
 /* jshint -W040, -W083, unused:false */
-(function loadsz(window, d3, Promise, undefined) {
+(function loadsz (window, d3, Promise, undefined) {
     "use strict";
 
     if (!window) throw new Error("Attepted to load hdp into invalid environment");
@@ -7,13 +7,15 @@
     if (!Promise) throw new Error("hdp dependency unmet: RSVP Promise");
 
     var domTarget = "body",
-        height = 400,
+        height = 300,
         width = 800,
         cb,
         controls,
         controller,
+        id = "sz_svg",
+        gui_id = 'sz_gui',
         group,
-        gui,
+        gui, guiBefore,
         paths,
         labels,
         line,
@@ -36,7 +38,7 @@
 
 
 
-    function SZ(config) {
+    function SZ (config) {
         var jsonInputs = {
                 "sz_hc_l.json": loaded_hc_l,
                 "szhc_p.json": loaded_szhc_p
@@ -68,6 +70,9 @@
                     case 'cb':
                         cb = configValue;
                         break;
+                    case 'gui_id':
+                        gui_id = configValue;
+                        break;
                     case 'target':
                         domTarget = configValue;
                         if (domTarget.indexOf('#') !== 0) {
@@ -82,7 +87,7 @@
         }
 
         initPaint();
-        initGUI();
+        this.initGUI();
         Promise.all(loadedPs)
             .then(execJSONhandlers)
             .then(function userCallback() {
@@ -166,8 +171,11 @@
             })
             .interpolate("linear");
 
-        svg.attr("width", width)
-            .attr("height", height)
+        svg.attr({
+            "width": width,
+            "height": height,
+            "id": id
+            })
             .style("position", "relative");
 
         group = svg.append("g")
@@ -181,8 +189,8 @@
     /**
      * Generates the dat.gui control panel
      */
-    function initGUI() {
-        gui = new dat.GUI();
+    SZ.prototype.initGUI = function () {
+        gui = new dat.GUI({autoPlace: false});
         controls = new DCmap();
         gui.add(controls, 'example');
         controller = gui.add(controls, 'step', 0, 1000);
@@ -192,12 +200,10 @@
             takestep(value);
         });
 
-        //controller.onFinishChange(function controllerChangeComplete(value) {});
-
         var c_color = gui.add(controls, 'cGroups', false).name('use color');
+        this.useColor = c_color.domElement.childNodes[0];
         c_color.onChange(function(value) {
             if (value) {
-                console.log(value);
                 svg.selectAll("circle")
                     .style("fill",
                         function(d, i) {
@@ -212,8 +218,12 @@
                     });
             }
         });
-        getTargetNode().appendChild(gui.domElement);
-    }
+        gui.domElement.id = gui_id;
+        if (guiBefore) {
+            getTargetNode().insertBefore(gui.domElement, getTargetNode().firstChild);
+        } else {
+            getTargetNode().appendChild(gui.domElement);
+        }    };
 
 
 
