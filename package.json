@@ -1,0 +1,22 @@
+{
+  "name": "schizophrenia-visualizer",
+  "version": "1.0.0",
+  "description": "generates a dynamics schizophrenia-visualizer!",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MRN-Code/szv.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MRN-Code/szv/issues"
+  },
+  "homepage": "https://github.com/MRN-Code/szv#readme",
+  "dependencies": {
+    "d3": "^3.5.17"
+  }
+}
